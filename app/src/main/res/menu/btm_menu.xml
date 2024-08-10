@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Home"
+        android:icon="@drawable/ic_explore"
+        app:tint="@color/white"
+        android:id="@+id/homeFragment"/>
+
+    <item android:title="Favourite"
+        android:icon="@drawable/ic_favourite"
+        app:tint="@color/white"
+        android:id="@+id/favouritesFragment"/>
+
+    <item android:title="Genres"
+        android:icon="@drawable/ic_category"
+        app:tint="@color/white"
+        android:id="@+id/categoriesFragment"/>
+
+</menu>
