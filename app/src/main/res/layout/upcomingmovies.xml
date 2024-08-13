@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:background="#2f2f39">
+
+    <ImageView
+        android:id="@+id/ivUpComingMoviePoster"
+        android:layout_width="120dp"
+        android:layout_height="180dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvUpComingMovieTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="4dp"
+        android:text="Title"
+        android:lines="2"
+        android:maxLines="2"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/ivUpComingMoviePoster"
+        app:layout_constraintStart_toStartOf="@+id/ivUpComingMoviePoster"
+        app:layout_constraintTop_toBottomOf="@+id/ivUpComingMoviePoster" />
+
+    <TextView
+        android:id="@+id/tvRelease"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Release Date"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/tvUpComingMovieTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvUpComingMovieTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvUpComingMovieTitle"
+        />
+
+    <TextView
+        android:id="@+id/tvUpComingMovieDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        android:text="Date"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/tvUpComingMovieTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvUpComingMovieTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvRelease"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

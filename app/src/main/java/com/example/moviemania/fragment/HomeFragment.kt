@@ -6,13 +6,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.moviemania.activities.MovieActivity
 import com.example.moviemania.adapter.NewMoviesAdapter
+import com.example.moviemania.adapter.UpComingMovieAdapter
 import com.example.moviemania.databinding.FragmentHomeBinding
 import com.example.moviemania.pojo.Result
+import com.example.moviemania.pojo.ResultX
+import com.example.moviemania.pojo.UpComingMovie
 import com.example.moviemania.viewModel.HomeViewModel
 
 class HomeFragment : Fragment() {
@@ -20,6 +24,7 @@ class HomeFragment : Fragment() {
     private lateinit var homeMvvm: HomeViewModel
     private lateinit var randomMovie : Result
     private lateinit var newMoviesAdapter: NewMoviesAdapter
+    private lateinit var upComingMovieAdapter: UpComingMovieAdapter
     val apiKey = "aa8ce92f8c02785006a6e448841fe66e"
     private val baseUrl = "https://image.tmdb.org/t/p/w500/"
 
@@ -34,6 +39,7 @@ class HomeFragment : Fragment() {
         homeMvvm = ViewModelProvider(this)[HomeViewModel::class.java]
 
         newMoviesAdapter = NewMoviesAdapter()
+        upComingMovieAdapter = UpComingMovieAdapter()
 
     }
 
@@ -49,6 +55,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         prepareNewMovieRecyclerView()
+        prepareUpComingMovieRecyclerView()
 
         homeMvvm.getRandomMovie()
         observerRandomMovie()
@@ -58,7 +65,35 @@ class HomeFragment : Fragment() {
         observeNewMovieLiveData()
         onNewMovieClick()
 
+        homeMvvm.getUpComingMovie()
+        observeUpComingMovieLiveData()
+        onUpcomingMovieClick()
 
+    }
+
+    private fun onUpcomingMovieClick() {
+        upComingMovieAdapter.onItemClick = {movie ->
+            val intent = Intent(activity,MovieActivity::class.java)
+            intent.putExtra(MOVIE_ID,movie.id)
+            intent.putExtra(MOVIE_TITLE,movie.title)
+            intent.putExtra(MOVIE_POSTER,movie.poster_path)
+            startActivity(intent)
+
+        }
+    }
+
+    private fun prepareUpComingMovieRecyclerView() {
+        binding.rvUpcomingMovies.apply {
+            layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
+            adapter = upComingMovieAdapter
+        }
+    }
+
+    private fun observeUpComingMovieLiveData() {
+        homeMvvm.observeUpComingMovieLiveData().observe(viewLifecycleOwner
+        ) { upComingList ->
+                upComingMovieAdapter.setUpComing(upComingList = upComingList as ArrayList)
+        }
     }
 
 

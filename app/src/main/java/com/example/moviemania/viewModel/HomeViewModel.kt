@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.moviemania.pojo.MoviesList
 import com.example.moviemania.pojo.Result
+import com.example.moviemania.pojo.ResultX
+import com.example.moviemania.pojo.UpComingMovie
 import com.example.moviemania.retrofit.RetrofitInstance
 import retrofit2.Call
 import retrofit2.Callback
@@ -13,10 +15,14 @@ import retrofit2.Response
 
 class HomeViewModel:ViewModel() {
 
-    private var randomMovieLiveData = MutableLiveData<Result>()
     val apiKey = "aa8ce92f8c02785006a6e448841fe66e"
+    val startDate = "2024-09-01"
+    val endDate = "2024-12-31"
+    private var randomMovieLiveData = MutableLiveData<Result>()
 
     private var newMoviesLiveData = MutableLiveData<List<Result>>()
+
+    private var upComingMovieLiveData = MutableLiveData<List<ResultX>>()
 
 
     fun getRandomMovie(){
@@ -55,6 +61,21 @@ class HomeViewModel:ViewModel() {
         })
     }
 
+    fun getUpComingMovie(){
+        RetrofitInstance.api.getUpComingMovie(apiKey,startDate,endDate).enqueue(object :Callback<UpComingMovie>{
+            override fun onResponse(call: Call<UpComingMovie>, response: Response<UpComingMovie>) {
+                if (response.body() != null){
+                    upComingMovieLiveData.value = response.body()!!.results
+                }
+            }
+
+            override fun onFailure(call: Call<UpComingMovie>, t: Throwable) {
+                Log.d("HomeFragment",t.message.toString())
+            }
+
+        })
+    }
+
 
     fun observeRandomMovieLiveData():LiveData<Result>{
         return randomMovieLiveData
@@ -62,6 +83,10 @@ class HomeViewModel:ViewModel() {
 
     fun observerNewMovieLiveData():LiveData<List<Result>>{
         return newMoviesLiveData
+    }
+
+    fun observeUpComingMovieLiveData(): LiveData<List<ResultX>>{
+        return upComingMovieLiveData
     }
 
 }

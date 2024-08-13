@@ -2,6 +2,7 @@ package com.example.moviemania.retrofit
 
 import com.example.moviemania.pojo.MoviesDetails
 import com.example.moviemania.pojo.MoviesList
+import com.example.moviemania.pojo.UpComingMovie
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -11,6 +12,11 @@ interface MovieApi {
 
     @GET("movie/popular?")
     fun getMovies(@Query("api_key") apiKey: String) : Call<MoviesList>
+
+    @GET("discover/movie?")
+    fun getUpComingMovie(@Query("api_key") apiKey: String,
+                         @Query("primary_release_date.gte") startDate: String,
+                         @Query("primary_release_date.lte") endDate: String ): Call<UpComingMovie>
 
     @GET("discover/movie")
     fun getPopularMovies(@Query("api_key") apiKey: String,
@@ -26,4 +32,6 @@ interface MovieApi {
 
     @GET("genre/movie/list")
     fun getMovieGenres(@Query("api_key") apiKey: String): Call<MoviesDetails>
+
+
 }

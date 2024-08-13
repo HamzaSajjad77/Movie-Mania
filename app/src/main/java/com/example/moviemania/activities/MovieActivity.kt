@@ -57,8 +57,16 @@ class MovieActivity : AppCompatActivity() {
         movieMvvm.observeMovieDetailLiveData().observe(this,object :Observer<MoviesDetails>{
             override fun onChanged(value: MoviesDetails) {
                 responseCase()
-                binding.tvMovieDuration.text = convertMinutesToHours(value.runtime)
-                binding.tvMovieRating.text = String.format("%.1f", value.vote_average)
+                binding.tvMovieDuration.text = if (value.runtime != null && value.runtime > 0) {
+                    convertMinutesToHours(value.runtime)
+                } else {
+                    "N/A"
+                }
+                binding.tvMovieRating.text = if (value.vote_average != null && value.vote_average > 0) {
+                    String.format("%.1f", value.vote_average)
+                } else {
+                    "N/A"
+                }
                 binding.tvMovieReleaseDate.text = value.release_date
                 binding.tvMovieSummaryInfo.text = value.overview
                 val mainActors = value.credits.cast.take(10)
