@@ -1,33 +1,26 @@
 package com.example.moviemania.pojo
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+
 data class MoviesList(
     val results: List<Result>
 )
-
-
+@Entity(tableName = "movies_details")
 data class MoviesDetails(
-    val adult: Boolean,
-    val backdrop_path: String,
-    val belongs_to_collection: Any,
     val budget: Int,
     val genres: List<Genre>,
+    val genre_ids: List<Int>,
     val homepage: String,
-    val id: String,
-    val imdb_id: String,
-    val origin_country: List<String>,
-    val original_language: String,
-    val original_title: String,
+    @PrimaryKey val id: String,
     val overview: String,
     val popularity: Double,
     val poster_path: String,
-    val production_companies: List<ProductionCompany>,
-    val production_countries: List<ProductionCountry>,
     val release_date: String,
     val revenue: Int,
     val runtime: Int,
-    val spoken_languages: List<SpokenLanguage>,
     val status: String,
-    val tagline: String,
     val title: String,
     val video: Boolean,
     val vote_average: Float,

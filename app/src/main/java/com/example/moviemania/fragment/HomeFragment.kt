@@ -7,37 +7,40 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.moviemania.activities.GenreActivity
+import com.example.moviemania.activities.MainActivity
 import com.example.moviemania.activities.MovieActivity
+import com.example.moviemania.adapter.GenreAdapter
 import com.example.moviemania.adapter.NewMoviesAdapter
 import com.example.moviemania.adapter.UpComingMovieAdapter
 import com.example.moviemania.databinding.FragmentHomeBinding
 import com.example.moviemania.pojo.Result
-import com.example.moviemania.pojo.ResultX
-import com.example.moviemania.pojo.UpComingMovie
 import com.example.moviemania.viewModel.HomeViewModel
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var homeMvvm: HomeViewModel
+    private lateinit var viewModel: HomeViewModel
     private lateinit var randomMovie : Result
     private lateinit var newMoviesAdapter: NewMoviesAdapter
     private lateinit var upComingMovieAdapter: UpComingMovieAdapter
-    val apiKey = "aa8ce92f8c02785006a6e448841fe66e"
+    private lateinit var genreAdapter: GenreAdapter
     private val baseUrl = "https://image.tmdb.org/t/p/w500/"
 
     companion object{
         const val MOVIE_ID = "idMovie"
         const val MOVIE_TITLE = "titleMovie"
         const val MOVIE_POSTER = "posterMovie"
+        const val GENRE_ID = "genreId"
+        const val GENRE_NAME = "genreName"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        homeMvvm = ViewModelProvider(this)[HomeViewModel::class.java]
 
+        viewModel = (activity as MainActivity).viewModel
         newMoviesAdapter = NewMoviesAdapter()
         upComingMovieAdapter = UpComingMovieAdapter()
 
@@ -54,21 +57,50 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        prepareNewMovieRecyclerView()
-        prepareUpComingMovieRecyclerView()
-
-        homeMvvm.getRandomMovie()
+        viewModel.getRandomMovie()
         observerRandomMovie()
         onRandomMovieClick()
 
-        homeMvvm.getNewMovies()
+        prepareNewMovieRecyclerView()
+        prepareUpComingMovieRecyclerView()
+        prepareGenreRecyclerView()
+
+        viewModel.getNewMovies()
         observeNewMovieLiveData()
         onNewMovieClick()
 
-        homeMvvm.getUpComingMovie()
+        viewModel.getUpComingMovie()
         observeUpComingMovieLiveData()
         onUpcomingMovieClick()
 
+        viewModel.getGenre()
+        observeGenreLiveData()
+        onGenreClick()
+
+    }
+
+    private fun onGenreClick() {
+        genreAdapter.onItemClick = {genre ->
+            val intent = Intent(activity,GenreActivity::class.java)
+            intent.putExtra(GENRE_ID,genre.id)
+            intent.putExtra(GENRE_NAME,genre.name)
+            startActivity(intent)
+
+        }
+    }
+
+    private fun prepareGenreRecyclerView() {
+        genreAdapter = GenreAdapter()
+        binding.rvGenre.apply {
+            layoutManager = GridLayoutManager(context, 3,GridLayoutManager.VERTICAL,false)
+            adapter = genreAdapter
+        }
+    }
+
+    private fun observeGenreLiveData() {
+        viewModel.observeGenreLiveData().observe(viewLifecycleOwner, Observer { genre ->
+            genreAdapter.setGenreList(genre)
+        })
     }
 
     private fun onUpcomingMovieClick() {
@@ -90,7 +122,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeUpComingMovieLiveData() {
-        homeMvvm.observeUpComingMovieLiveData().observe(viewLifecycleOwner
+        viewModel.observeUpComingMovieLiveData().observe(viewLifecycleOwner
         ) { upComingList ->
                 upComingMovieAdapter.setUpComing(upComingList = upComingList as ArrayList)
         }
@@ -115,7 +147,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeNewMovieLiveData() {
-        homeMvvm.observerNewMovieLiveData().observe(viewLifecycleOwner
+        viewModel.observerNewMovieLiveData().observe(viewLifecycleOwner
         ) { movieList ->
                 newMoviesAdapter.setNewMovies(newMovieList = movieList as ArrayList<Result>)
         }
@@ -133,7 +165,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun observerRandomMovie() {
-        homeMvvm.observeRandomMovieLiveData().observe(viewLifecycleOwner
+        viewModel.observeRandomMovieLiveData().observe(viewLifecycleOwner
         ) { value ->
             val posterUrl = baseUrl + value.poster_path
             Glide.with(this@HomeFragment)

@@ -75,7 +75,7 @@
                     app:tint="@color/white" />
 
                 <ImageView
-                    android:id="@+id/ivTopConstraintFav"
+                    android:id="@+id/btnAddToFav"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:background="@drawable/big_circle_dark"
@@ -196,6 +196,32 @@
                 app:layout_constraintTop_toBottomOf="@id/tvMovieSummaryTitle" />
 
             <TextView
+                android:id="@+id/tvGenreTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Genre"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintEnd_toEndOf="@id/tvMovieSummaryInfo"
+                app:layout_constraintStart_toStartOf="@id/tvMovieSummaryInfo"
+                app:layout_constraintTop_toBottomOf="@id/tvMovieSummaryInfo" />
+
+            <TextView
+                android:id="@+id/tvGenreInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Genre List"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintEnd_toEndOf="@id/tvGenreTitle"
+                app:layout_constraintStart_toStartOf="@id/tvGenreTitle"
+                app:layout_constraintTop_toBottomOf="@id/tvGenreTitle" />
+
+            <TextView
                 android:id="@+id/tvActor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -205,9 +231,9 @@
                 android:gravity="center_vertical"
                 android:textSize="16sp"
                 android:textColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/tvMovieSummaryInfo"
-                app:layout_constraintStart_toStartOf="@id/tvMovieSummaryInfo"
-                app:layout_constraintEnd_toEndOf="@id/tvMovieSummaryInfo"
+                app:layout_constraintTop_toBottomOf="@id/tvGenreInfo"
+                app:layout_constraintStart_toStartOf="@id/tvGenreInfo"
+                app:layout_constraintEnd_toEndOf="@id/tvGenreInfo"
                 app:drawableTint="@color/white"
                 app:drawableStartCompat="@drawable/ic_person" />
 

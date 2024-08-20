@@ -1,6 +1,7 @@
 package com.example.moviemania.viewModel
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +15,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MovieViewModel():ViewModel() {
+class MovieViewModel(
+    val movieDataBase: MovieDataBase
+):ViewModel() {
     private var movieDetailLiveData = MutableLiveData<MoviesDetails>()
     val apiKey = "aa8ce92f8c02785006a6e448841fe66e"
 
@@ -42,5 +45,18 @@ class MovieViewModel():ViewModel() {
     fun observeMovieDetailLiveData(): LiveData<MoviesDetails> {
         return movieDetailLiveData
     }
+
+    fun insertMovie(movieDetails: MoviesDetails){
+        viewModelScope.launch {
+            movieDataBase.movieDao().upsertMovieDetails(movieDetails)
+        }
+    }
+
+    fun deleteMovie(movieDetails: MoviesDetails){
+        viewModelScope.launch {
+            movieDataBase.movieDao().deleteMovieDetails(movieDetails)
+        }
+    }
+
 
 }

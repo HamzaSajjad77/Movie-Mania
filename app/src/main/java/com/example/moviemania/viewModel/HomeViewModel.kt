@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.moviemania.db.MovieDataBase
+import com.example.moviemania.pojo.Genre
+import com.example.moviemania.pojo.MoviesDetails
 import com.example.moviemania.pojo.MoviesList
 import com.example.moviemania.pojo.Result
 import com.example.moviemania.pojo.ResultX
@@ -13,16 +16,18 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeViewModel:ViewModel() {
+class HomeViewModel(
+    private val movieDataBase: MovieDataBase
+):ViewModel() {
 
     val apiKey = "aa8ce92f8c02785006a6e448841fe66e"
     val startDate = "2024-09-01"
     val endDate = "2024-12-31"
     private var randomMovieLiveData = MutableLiveData<Result>()
-
     private var newMoviesLiveData = MutableLiveData<List<Result>>()
-
     private var upComingMovieLiveData = MutableLiveData<List<ResultX>>()
+    private var genreLiveData = MutableLiveData<List<Genre>>()
+    private var favouriteMovieLiveData = movieDataBase.movieDao().getAllMovies()
 
 
     fun getRandomMovie(){
@@ -76,6 +81,21 @@ class HomeViewModel:ViewModel() {
         })
     }
 
+    fun getGenre(){
+        RetrofitInstance.api.getMovieGenresList(apiKey).enqueue(object : Callback<MoviesDetails>{
+            override fun onResponse(call: Call<MoviesDetails>, response: Response<MoviesDetails>) {
+               if (response.body() != null){
+                   genreLiveData.value = response.body()!!.genres
+               }
+            }
+
+            override fun onFailure(call: Call<MoviesDetails>, t: Throwable) {
+                Log.d("HomeFragment",t.message.toString())
+            }
+
+        })
+    }
+
 
     fun observeRandomMovieLiveData():LiveData<Result>{
         return randomMovieLiveData
@@ -87,6 +107,14 @@ class HomeViewModel:ViewModel() {
 
     fun observeUpComingMovieLiveData(): LiveData<List<ResultX>>{
         return upComingMovieLiveData
+    }
+
+    fun observeGenreLiveData(): LiveData<List<Genre>>{
+        return genreLiveData
+    }
+
+    fun observeFavouriteMovieLiveData():LiveData<List<Result>>{
+        return favouriteMovieLiveData
     }
 
 }

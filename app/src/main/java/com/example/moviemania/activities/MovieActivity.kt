@@ -3,6 +3,7 @@ package com.example.moviemania.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.example.moviemania.db.MovieDataBase
 import com.example.moviemania.fragment.HomeFragment
 import com.example.moviemania.pojo.MoviesDetails
 import com.example.moviemania.viewModel.MovieViewModel
+import com.example.moviemania.viewModel.MovieViewModelFactory
 
 class MovieActivity : AppCompatActivity() {
     private lateinit var movieId : String
@@ -30,13 +32,27 @@ class MovieActivity : AppCompatActivity() {
         binding = ActivityMovieBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        movieMvvm = ViewModelProvider(this)[MovieViewModel::class.java]
+
+        val movieDataBase = MovieDataBase.getInstance(this)
+        val viewModelFactory = MovieViewModelFactory(movieDataBase)
+        movieMvvm = ViewModelProvider(this,viewModelFactory)[MovieViewModel::class.java]
 
         getMovieInfoFromIntent()
         setInfoInViews()
         loadingCase()
         movieMvvm.getMovieDetail(movieId, apiKey)
         observeMovieDetailsLiveData()
+
+        onFavouriteClick()
+    }
+
+    private fun onFavouriteClick() {
+        binding.btnAddToFav.setOnClickListener{
+            movieToSave?.let {
+                movieMvvm.insertMovie(it)
+                Toast.makeText(this, "Movie Saved", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setInfoInViews() {
@@ -53,28 +69,33 @@ class MovieActivity : AppCompatActivity() {
 
     }
 
+    private var movieToSave:MoviesDetails? = null
     private fun observeMovieDetailsLiveData() {
-        movieMvvm.observeMovieDetailLiveData().observe(this,object :Observer<MoviesDetails>{
-            override fun onChanged(value: MoviesDetails) {
-                responseCase()
-                binding.tvMovieDuration.text = if (value.runtime != null && value.runtime > 0) {
-                    convertMinutesToHours(value.runtime)
-                } else {
-                    "N/A"
-                }
-                binding.tvMovieRating.text = if (value.vote_average != null && value.vote_average > 0) {
-                    String.format("%.1f", value.vote_average)
-                } else {
-                    "N/A"
-                }
-                binding.tvMovieReleaseDate.text = value.release_date
-                binding.tvMovieSummaryInfo.text = value.overview
-                val mainActors = value.credits.cast.take(10)
-                actorAdapter = ActorAdapter(mainActors)
-                binding.rvActorsImages.adapter = actorAdapter
-                binding.rvActorsImages.layoutManager = LinearLayoutManager(this@MovieActivity, LinearLayoutManager.HORIZONTAL, false)
+        movieMvvm.observeMovieDetailLiveData().observe(this
+        ) { value ->
+            movieToSave = value
+            responseCase()
+
+            binding.tvMovieDuration.text = if (value.runtime > 0) {
+                convertMinutesToHours(value.runtime)
+            } else {
+                "N/A"
             }
-        })
+            binding.tvMovieRating.text = if (value.vote_average > 0) {
+                String.format("%.1f", value.vote_average)
+            } else {
+                "N/A"
+            }
+            binding.tvMovieReleaseDate.text = value.release_date
+            binding.tvMovieSummaryInfo.text = value.overview
+            val mainActors = value.credits.cast.take(10)
+            actorAdapter = ActorAdapter(mainActors)
+            binding.rvActorsImages.adapter = actorAdapter
+            binding.rvActorsImages.layoutManager =
+                LinearLayoutManager(this@MovieActivity, LinearLayoutManager.HORIZONTAL, false)
+            val genreNames = value.genres.joinToString(", ") { it.name }
+            binding.tvGenreInfo.text = genreNames
+        }
     }
 
     private fun getMovieInfoFromIntent() {
@@ -91,7 +112,7 @@ class MovieActivity : AppCompatActivity() {
 
     private fun loadingCase(){
         binding.pbDetailFragmentLoading.visibility = View.VISIBLE
-        binding.ivTopConstraintFav.visibility = View.INVISIBLE
+        binding.tvMovieTitle.visibility = View.INVISIBLE
         binding.tvMovieSummaryInfo.visibility = View.INVISIBLE
         binding.rvActorsImages.visibility = View.INVISIBLE
         binding.tvMovieDuration.visibility = View.INVISIBLE
@@ -100,7 +121,7 @@ class MovieActivity : AppCompatActivity() {
     }
     private fun responseCase(){
         binding.pbDetailFragmentLoading.visibility = View.INVISIBLE
-        binding.ivTopConstraintFav.visibility = View.VISIBLE
+        binding.tvMovieTitle.visibility = View.VISIBLE
         binding.tvMovieSummaryInfo.visibility = View.VISIBLE
         binding.rvActorsImages.visibility = View.VISIBLE
         binding.tvMovieDuration.visibility = View.VISIBLE
